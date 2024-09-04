@@ -21,7 +21,9 @@ const Navigation = () => {
             className="bg-body-tertiary mb-3 px-3"
           >
             <Container fluid>
-              <Navbar.Brand href="#">VITall</Navbar.Brand>
+              <Navbar.Brand href="#">
+                <Link to="/">VITall</Link>
+              </Navbar.Brand>
               <Navbar.Toggle
                 aria-controls={`offcanvasNavbar-expand-${expand}`}
               />
