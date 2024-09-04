@@ -1,14 +1,15 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 
 import FormInput from "../form-input/form-input.component";
 import Button from "react-bootstrap/Button";
 
+import { useNavigate } from "react-router-dom";
+
 import "./sign-in-form.styles.scss";
 
-import {
-  signInAuthUserWithEmailAndPassword,
-  signInWithGooglePopup,
-} from "../../utils/firebase.utils";
+import { UserContext } from "../../contexts/user.context";
+
+import { signInAuthUserWithEmailAndPassword } from "../../utils/firebase.utils";
 
 const defaultFormFields = {
   email: "",
@@ -18,13 +19,12 @@ const defaultFormFields = {
 const SignInForm = () => {
   const [formFields, setFormFields] = useState(defaultFormFields);
   const { email, password } = formFields;
+  const navigate = useNavigate();
+
+  const { setCurrentUser } = useContext(UserContext);
 
   const resetFormFields = () => {
     setFormFields(defaultFormFields);
-  };
-
-  const signInWithGoogle = async () => {
-    await signInWithGooglePopup();
   };
 
   const handleChange = (event) => {
@@ -37,8 +37,13 @@ const SignInForm = () => {
     event.preventDefault();
 
     try {
-      await signInAuthUserWithEmailAndPassword(email, password);
+      const { user } = await signInAuthUserWithEmailAndPassword(
+        email,
+        password
+      );
+      setCurrentUser(user);
       resetFormFields();
+      navigate("/profile");
     } catch (error) {
       console.log("user sign in failed", error);
     }
@@ -68,9 +73,6 @@ const SignInForm = () => {
         />
         <div className="buttons-container">
           <Button type="submit">Sign In</Button>
-          <Button type="button" onClick={signInWithGoogle}>
-            Sign In With Google
-          </Button>
         </div>
       </form>
     </div>

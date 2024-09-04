@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useContext } from "react";
 import { Outlet, Link } from "react-router-dom";
 
 import Button from "react-bootstrap/Button";
@@ -10,7 +10,12 @@ import Offcanvas from "react-bootstrap/Offcanvas";
 
 import "./navigation.styles.scss";
 
+import { UserContext } from "../../contexts/user.context";
+
 const Navigation = () => {
+  const { currentUser } = useContext(UserContext);
+  console.log(currentUser);
+
   return (
     <Fragment>
       <>
@@ -39,15 +44,23 @@ const Navigation = () => {
                 </Offcanvas.Header>
                 <Offcanvas.Body className="pt-0">
                   <Nav className="justify-content-end flex-grow-1 my-3 mt-0">
-                    <Nav.Link href="#action1">
-                      <Link to="/">Home</Link>
-                    </Nav.Link>
-                    <Nav.Link href="#action2">
-                      <Link to="/sign-in">Sign In</Link>
-                    </Nav.Link>
-                    <Nav.Link href="#action2">
-                      <Link to="/sign-up">Sign Up</Link>
-                    </Nav.Link>
+                    <Link className="m-2" to="/">
+                      Home
+                    </Link>
+                    {currentUser ? (
+                      <Link className="m-2" to="/profile">
+                        Profile
+                      </Link>
+                    ) : (
+                      <>
+                        <Link className="m-2" to="/sign-in">
+                          Sign In
+                        </Link>
+                        <Link className="m-2" to="/sign-up">
+                          Sign Up
+                        </Link>
+                      </>
+                    )}
                   </Nav>
                   <Form className="d-flex">
                     <Form.Control
