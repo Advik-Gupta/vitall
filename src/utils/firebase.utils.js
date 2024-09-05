@@ -16,6 +16,7 @@ import {
   query,
   getDocs,
 } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAm7xLDD3GLjCeKFUIPmNim97IfU1Qo8y8",
@@ -32,6 +33,7 @@ const firebaseApp = initializeApp(firebaseConfig);
 export const auth = getAuth();
 
 export const db = getFirestore();
+export const storage = getStorage(firebaseApp);
 
 export const addCollectionAndDocuments = async (
   collectionKey,
