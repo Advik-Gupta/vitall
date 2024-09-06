@@ -1,12 +1,6 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { db, storage } from "../../utils/firebase.utils";
-import {
-  getBytes,
-  getDownloadURL,
-  listAll,
-  ref,
-  uploadBytes,
-} from "firebase/storage";
+import { getDownloadURL, listAll, ref, uploadBytes } from "firebase/storage";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 
 import Col from "react-bootstrap/Col";
@@ -26,6 +20,7 @@ const ProfilePage = () => {
   const { currentUser } = useContext(UserContext);
   const [userData, setUserData] = useState(null);
   const [imageUpload, setImageUpload] = useState(null);
+  const [editProfileButton, setEditProfileButton] = useState(true);
 
   const getUserData = async () => {
     const userDocRef = doc(db, "users", currentUser.uid);
@@ -33,10 +28,21 @@ const ProfilePage = () => {
     setUserData(userSnapshot.data());
   };
 
-  getUserData();
+  useEffect(() => {
+    getUserData();
+  }, []);
 
   const imageChanged = (event) => {
     setImageUpload(event.target.files[0]);
+  };
+
+  const handleEditProfile = () => {
+    const form = document.querySelector(".userDataContainer");
+    const inputs = form.querySelectorAll("input");
+    inputs.forEach((input) => {
+      input.disabled = false;
+    });
+    setEditProfileButton(!editProfileButton);
   };
 
   const handleUpdateProfileImage = () => {
@@ -72,6 +78,25 @@ const ProfilePage = () => {
     });
   };
 
+  const handleUpdateProfile = () => {
+    console.log("Update Profile");
+    const userDocRef = doc(db, "users", currentUser.uid);
+    updateDoc(userDocRef, {
+      ...userData,
+    });
+    const form = document.querySelector(".userDataContainer");
+    const inputs = form.querySelectorAll("input");
+    inputs.forEach((input) => {
+      input.disabled = true;
+    });
+    setEditProfileButton(!editProfileButton);
+  };
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setUserData({ ...userData, [name]: value });
+  };
+
   return (
     <div>
       <h1 className="pageHeader">Your Profile</h1>
@@ -101,6 +126,7 @@ const ProfilePage = () => {
                   disabled
                   name="displayName"
                   value={userData.displayName}
+                  onChange={handleChange}
                 />
                 <FormInput
                   label="Email"
@@ -108,6 +134,7 @@ const ProfilePage = () => {
                   disabled
                   name="email"
                   value={userData.email}
+                  onChange={handleChange}
                 />
                 <FormInput
                   label="VIT Register Number"
@@ -115,6 +142,7 @@ const ProfilePage = () => {
                   disabled
                   name="vitRegisterNumber"
                   value={userData.vitRegisterNumber}
+                  onChange={handleChange}
                 />
                 <FormInput
                   label="Hostel"
@@ -122,6 +150,7 @@ const ProfilePage = () => {
                   disabled
                   name="hostel"
                   value={userData.hostel}
+                  onChange={handleChange}
                 />
                 <FormInput
                   label="Branch"
@@ -129,6 +158,7 @@ const ProfilePage = () => {
                   disabled
                   name="branch"
                   value={userData.branch}
+                  onChange={handleChange}
                 />
                 <FormInput
                   label="Year"
@@ -136,6 +166,7 @@ const ProfilePage = () => {
                   disabled
                   name="year"
                   value={userData.year}
+                  onChange={handleChange}
                 />
                 <FormInput
                   label="Instagram"
@@ -143,10 +174,34 @@ const ProfilePage = () => {
                   disabled
                   name="instagram"
                   value={userData.instagram}
+                  onChange={handleChange}
                 />
-                <Button variant="primary" onClick={handleUpdateProfileImage}>
-                  Update Image
-                </Button>
+                {editProfileButton ? (
+                  <Button
+                    className="m-3 mt-0"
+                    variant="primary"
+                    onClick={handleEditProfile}
+                  >
+                    Edit Profile
+                  </Button>
+                ) : (
+                  <>
+                    <Button
+                      className="m-3 mt-0"
+                      variant="primary"
+                      onClick={handleUpdateProfile}
+                    >
+                      Update Profile Data
+                    </Button>
+                    <Button
+                      className="m-3 mt-0"
+                      variant="primary"
+                      onClick={handleUpdateProfileImage}
+                    >
+                      Update Profile Image
+                    </Button>
+                  </>
+                )}
               </Col>
             </Row>
           </Container>
